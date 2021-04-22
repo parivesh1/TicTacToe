@@ -2,35 +2,33 @@ package com.example.android.appdevtest;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Button[][] buttons = new Button[3][3];
 
-    private boolean P1 = true;
+    private boolean bool = true; //As X starts First
 
-    private int C;
+    private int count;
 
-    private int PX;
-    private int PO;
+    private int points_X;
+    private int points_O;
 
-    private TextView TVX;
-    private TextView TVO;
+    private TextView textViewX;
+    private TextView textViewY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TVX = findViewById(R.id.px);
-        TVO = findViewById(R.id.po);
+        textViewX = findViewById(R.id.player_x);
+        textViewY = findViewById(R.id.player_o);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -42,12 +40,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         Button buttonReset = findViewById(R.id.button_reset);
-        buttonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            resetGame();
-            }
-        });
+        buttonReset.setOnClickListener(v -> resetGame());
+
     }
 
     @Override
@@ -56,24 +50,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-        if (P1) {
+        if (bool) {
             ((Button) v).setText("X");
         } else {
             ((Button) v).setText("O");
         }
 
-        C++; //Pun intended
+        count++;
 
         if (checkForWin()) {
-            if (P1) {
+            if (bool) {  //checkForWin has returned true and X has won
                 player1Wins();
-            } else {
+            } else {    //checkForWin has returned true and O has won
                 player2Wins();
             }
-        } else if (C == 9) {
+        } else if (count == 9) {  //checkForWin has returned False, therefore check if all spaces are filled
             draw();
         } else {
-            P1 = !P1;
+            bool = !bool;   //If draw also hasn't occurred, then switch the turn
         }
 
     }
@@ -83,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                field[i][j] = buttons[i][j].getText().toString();
+                field[i][j] = buttons[i][j].getText().toString();  //Get the fields
             }
         }
 
@@ -91,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (field[i][0].equals(field[i][1])
                     && field[i][0].equals(field[i][2])
                     && !field[i][0].equals("")) {
-                return true;
+                return true;   //If a Column is filled by X or O
             }
         }
 
@@ -99,34 +93,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (field[0][i].equals(field[1][i])
                     && field[0][i].equals(field[2][i])
                     && !field[0][i].equals("")) {
-                return true;
+                return true;   //If a Row is filled by X or O
             }
         }
 
         if (field[0][0].equals(field[1][1])
                 && field[0][0].equals(field[2][2])
                 && !field[0][0].equals("")) {
-            return true;
+            return true;   //First Diagonal is filled by X or O
         }
 
         if (field[0][2].equals(field[1][1])
                 && field[0][2].equals(field[2][0])
                 && !field[0][2].equals("")) {
-            return true;
+            return true;   //Second Diagonal is filled by X or O
         }
 
         return false;
     }
 
     private void player1Wins() {
-        PX++;
+        points_X++;
         Toast.makeText(this, "Player X has Won!", Toast.LENGTH_SHORT).show();
         updatePointsText();
         resetBoard();
     }
 
     private void player2Wins() {
-        PO++;
+        points_O++;
         Toast.makeText(this, "Player O has Won!", Toast.LENGTH_SHORT).show();
         updatePointsText();
         resetBoard();
@@ -138,23 +132,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updatePointsText() {
-        TVX.setText("Player-X" + "\n" + PX);
-        TVO.setText("Player-O" + "\n" + PO);
+        textViewX.setText("Player-X \n" + points_X);
+        textViewY.setText("Player-O \n" + points_O);
     }
 
     private void resetBoard() {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                buttons[i][j].setText("");
+                buttons[i][j].setText("");  //Reset All the Spaces
             }
         }
-
-        C = 0;
-        P1 = true;
+        count = 0;  //Counter set to Zero
+        bool = true;  //X will start the game as convention
     }
+
     private void resetGame() {
-        PX = 0;
-        PO = 0;
+        points_X = 0;
+        points_O = 0;
         updatePointsText();
         resetBoard();
     }
